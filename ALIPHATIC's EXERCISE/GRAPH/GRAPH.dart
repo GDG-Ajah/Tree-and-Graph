@@ -44,3 +44,50 @@
 
 // Hint #1  
 // Do you recognize this as a graph problem?
+
+
+
+// Solution 1: DFS
+
+
+
+class Solution {
+    func calcEquation(_ equations: [[String]], _ values: [Double], _ queries: [[String]]) -> [Double] {
+        // build graph
+        var graph = [String: [(String, Double)]]()
+        for i in 0..<equations.count {
+            let (a, b) = (equations[i][0], equations[i][1])
+            graph[a, default: [(String, Double)]()].append((b, values[i]))
+            graph[b, default: [(String, Double)]()].append((a, 1/values[i]))
+        }
+        
+        // dfs
+        func dfs(_ start: String, _ end: String, _ visited: inout Set<String>) -> Double {
+            if start == end { return 1.0 }
+            visited.insert(start)
+            guard let neighbors = graph[start] else { return -1.0 }
+            for (neighbor, value) in neighbors {
+                if !visited.contains(neighbor) {
+                    let res = dfs(neighbor, end, &visited)
+                    if res != -1.0 {
+                        return res * value
+                    }
+                }
+            }
+            return -1.0
+        }
+        
+        // check
+        var res = [Double]()
+        for query in queries {
+            let (a, b) = (query[0], query[1])
+            if graph.keys.contains(a), graph.keys.contains(b) {
+                var visited = Set<String>()
+                res.append(dfs(a, b, &visited))
+            } else {
+                res.append(-1.0)
+            }
+        }
+        return res
+    }
+}

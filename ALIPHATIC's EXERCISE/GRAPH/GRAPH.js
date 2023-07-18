@@ -45,3 +45,63 @@ Ai, Bi, Cj, Dj consist of lower case English letters and digits.
 Hint #1  
 Do you recognize this as a graph problem?
 */
+
+
+// Solution 
+
+/**
+ * @param {string[][]} equations
+ * @param {number[]} values
+ * @param {string[][]} queries
+ * @return {number[]}
+ */
+
+// 1. Build the graph
+// 2. Traverse the graph
+// 3. Return the result
+
+var calcEquation = function(equations, values, queries) {
+    const graph = buildGraph(equations, values);
+    const result = [];
+    
+    for (let i = 0; i < queries.length; i++) {
+        const [start, end] = queries[i];
+        const res = dfs(graph, start, end, new Set());
+        result.push(res);
+    }
+    
+    return result;
+}
+
+function dfs(graph, start, end, visited) {
+    if (!(start in graph) || !(end in graph)) return -1;
+    if (start === end) return 1;
+    if (graph[start][end]) return graph[start][end];
+    
+    visited.add(start);
+    
+    for (const neighbor in graph[start]) {
+        if (visited.has(neighbor)) continue;
+        const res = dfs(graph, neighbor, end, visited);
+        if (res !== -1) return graph[start][neighbor] * res;
+    }
+    
+    return -1;
+}
+
+function buildGraph(equations, values) {
+    const graph = {};
+    
+    for (let i = 0; i < equations.length; i++) {
+        const [start, end] = equations[i];
+        if (!(start in graph)) graph[start] = {};
+        if (!(end in graph)) graph[end] = {};
+        graph[start][end] = values[i];
+        graph[end][start] = 1 / values[i];
+    }
+    
+    return graph;
+}
+
+// Time complexity is O(n + m) where n is the number of equations and m is the number of queries. We visit every node in the graph once and perform a constant amount of work each time. Space complexity is O(n) where n is the number of equations. We store the graph in a hash map which can contain up to n nodes.
+
