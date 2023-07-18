@@ -47,8 +47,6 @@ Do you recognize this as a graph problem?
 */
 
 
-// Solution 
-
 /**
  * @param {string[][]} equations
  * @param {number[]} values
