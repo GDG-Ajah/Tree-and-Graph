@@ -44,3 +44,48 @@
 
 # Hint #1  
 # Do you recognize this as a graph problem?
+
+
+
+class Solution(object):
+    def calcEquation(self, equations, values, queries):
+
+        # Build Graph
+        graph = {}
+        for i in range(len(equations)):
+            # a/b = 2.0
+            a = equations[i][0]
+            b = equations[i][1]
+            if a not in graph:
+                graph[a] = {}
+            if b not in graph:
+                graph[b] = {}
+            graph[a][b] = values[i]
+            graph[b][a] = 1/values[i]
+
+        # DFS
+        def dfs(start, end, visited):
+            if start not in graph:
+                return -1
+            if end in graph[start]:
+                return graph[start][end]
+            for i in graph[start]:
+                if i not in visited:
+                    visited.add(i)
+                    temp = dfs(i, end, visited)
+                    if temp != -1:
+                        return graph[start][i] * temp
+            return -1
+        
+        # Main
+        res = []
+        for i in queries:
+            res.append(dfs(i[0], i[1], set()))
+        return res
+
+        """
+        :type equations: List[List[str]]
+        :type values: List[float]
+        :type queries: List[List[str]]
+        :rtype: List[float]
+        """
